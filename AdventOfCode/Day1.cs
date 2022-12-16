@@ -4,18 +4,13 @@ namespace AdventOfCode
 {
     class Day1
     {
-        static void Main()
-        {
-            CalorieCounting();
-        }
-
-        private static void CalorieCounting()
+        public static void CalorieCounting()
         {
             Dictionary<int, int> elves = new Dictionary<int, int>();
             elves.Add(0, 0);
             int index = 0;
             foreach (string line in File.ReadLines(
-                         @"C:/Users/Dariu/Documents/source/AdventOfCode/AdventOfCode/CalorieCounting.txt"))
+                         @"C:\Users\Dariu\Documents\source\squirkysAdventOfCode\AdventOfCode\CalorieCounting.txt"))
             {
                 if (String.IsNullOrEmpty(line))
                 {
@@ -32,18 +27,20 @@ namespace AdventOfCode
 
         private static void GetTopElves(Dictionary<int, int> elves, int topCount)
         {
-            if (topCount == 1)
-            { 
-                Console.WriteLine(
-                    $"The elf with the highest calorie amount is elf {elves.Keys.Max()} with a count of {elves.Values.Max()} \n");
-            }
-            
-            for (int i = 1; i < topCount + 1; i++)
+            var list = 
+                (from entry in elves
+                orderby entry.Value descending
+                select entry).Take(topCount);
+            int i = 1;
+            int sum = 0;
+            foreach (var test in list)
             {
                 Console.WriteLine(
-                    $"The elf with the {i}. calorie amount is elf {elves.Keys.Max()} with a count of {elves.Values.Max()} \n");
-                elves.Remove(elves.Keys.Max());
+                    $"The elf with the {i}. calorie amount is elf {test.Key} with a count of {test.Value} \n");
+                i++;
+                sum += test.Value;
             }
+            Console.WriteLine("They have a combined calorie count of " + sum);
         }
     }
 }

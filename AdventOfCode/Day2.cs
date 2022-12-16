@@ -2,6 +2,12 @@
 
 public class Day2
 {
+    private enum PlayItems
+    {
+        Rock,
+        Paper,
+        Scissors
+    }
     private enum State
     {
         Win,
@@ -23,20 +29,24 @@ public class Day2
 
     public static int CalcScore(Dictionary<int, string> battles)
     {
+        int index = 1;
         int score = 0;
         foreach (KeyValuePair<int,string> battle in battles)
         {
-            switch (battle.Value[0])
+            Console.WriteLine(battle.Value);
+            Console.Write(index + ". ");
+            index++;
+            switch (GetPlayItem(battle.Value[1]))
             {
-                case 'A':
+                case PlayItems.Rock:
                     score += 1;
                     Console.Write(1);
                     break;
-                case 'B':
+                case PlayItems.Paper:
                     score += 2;
                     Console.Write(2);
                     break;
-                case 'C':
+                case PlayItems.Scissors:
                     score += 3;
                     Console.Write(3);
                     break;
@@ -45,7 +55,7 @@ public class Day2
             switch (GetState(battle.Value))
             {
                 case State.Loss:
-                    Console.Write("+ Loss");
+                    Console.Write(" + Loss");
                     break;
                 case State.Draw:
                     Console.Write(" + 3");
@@ -69,42 +79,58 @@ public class Day2
             .ToArray());
     }
 
-    private static State GetState(string battle)
+    private static PlayItems GetPlayItem(char letter)
     {
-        switch (battle[0])
+        switch (letter)
         {
             case 'A':
-                switch (battle[1])
-                {
-                    case 'X':
-                        return State.Draw;
-                    case 'Y':
-                        return State.Loss;
-                    case 'Z':
-                        return State.Win;
-                }
-
-                break;
+            case 'X':
+                return PlayItems.Rock;
             case 'B':
-                switch (battle[1])
+            case 'Y':
+                return PlayItems.Paper;
+            case 'C':
+            case 'Z':
+                return PlayItems.Scissors;
+        }
+
+        throw new ArgumentException();
+    }
+    private static State GetState(string battle)
+    {
+        switch (GetPlayItem(battle[1]))
+        {
+            case PlayItems.Rock:
+                switch (GetPlayItem(battle[0]))
                 {
-                    case 'X':
-                        return State.Win;
-                    case 'Y':
+                    case PlayItems.Rock:
                         return State.Draw;
-                    case 'Z':
+                    case PlayItems.Paper:
+                        return State.Loss;
+                    case PlayItems.Scissors:
+                        return State.Win;
+                }
+                break;
+            case PlayItems.Paper:
+                switch (GetPlayItem(battle[0]))
+                {
+                    case PlayItems.Rock:
+                        return State.Win;
+                    case PlayItems.Paper:
+                        return State.Draw;
+                    case PlayItems.Scissors:
                         return State.Loss;
                 }
 
                 break;
-            case 'C':
-                switch (battle[1])
+            case PlayItems.Scissors:
+                switch (GetPlayItem(battle[0]))
                 {
-                    case 'X':
+                    case PlayItems.Rock:
                         return State.Loss;
-                    case 'Y':
+                    case PlayItems.Paper:
                         return State.Win;
-                    case 'Z':
+                    case PlayItems.Scissors:
                         return State.Draw;
                 }
 

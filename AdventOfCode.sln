@@ -3,6 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventOfCode", "AdventOfCode\AdventOfCode.csproj", "{9E79FE17-1E75-4FED-AA9A-F3C84885E572}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventOfCodeTests", "AdventOfCodeTests\AdventOfCodeTests.csproj", "{5321EC99-03C5-437A-928A-B95D4B6F0874}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9E79FE17-1E75-4FED-AA9A-F3C84885E572} = {9E79FE17-1E75-4FED-AA9A-F3C84885E572}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

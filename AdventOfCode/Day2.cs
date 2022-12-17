@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode;
+﻿using System.Globalization;
+
+namespace AdventOfCode;
 
 public class Day2
 {
@@ -29,14 +31,53 @@ public class Day2
 
     public static int CalcScore(Dictionary<int, string> battles)
     {
-        int index = 1;
         int score = 0;
+        //score = PartI(battles, score);
+        score = PartII(battles, score);
+        return score;
+    }
+
+    private static int PartII(Dictionary<int, string> battles, int score)
+    {
         foreach (KeyValuePair<int,string> battle in battles)
         {
-            Console.WriteLine(battle.Value);
-            Console.Write(index + ". ");
-            index++;
-            switch (GetPlayItem(battle.Value[1]))
+            switch (GetPlayItemsFromState(GetPlayItemFromLetter(battle.Value[0]), GetStateFromLetter(battle.Value[1])))
+            {
+                case PlayItems.Rock:
+                    score += 1;
+                    break;
+                case PlayItems.Paper:
+                    score += 2;
+                    break;
+                case PlayItems.Scissors:
+                    score += 3;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            switch (battle.Value[1])
+            {
+                case 'X':
+                    score += 0;
+                    break;
+                case 'Y':
+                    score += 3;
+                    break;
+                case 'Z':
+                    score += 6;
+                    break;
+                default:
+                    throw new ArgumentException();
+            }
+        }
+        return score;
+    }
+
+    private static int PartI(Dictionary<int, string> battles, int score)
+    {
+        foreach (KeyValuePair<int, string> battle in battles)
+        {
+            switch (GetPlayItemFromLetter(battle.Value[1]))
             {
                 case PlayItems.Rock:
                     score += 1;
@@ -52,7 +93,7 @@ public class Day2
                     break;
             }
 
-            switch (GetState(battle.Value))
+            switch (GetStateFromString(battle.Value))
             {
                 case State.Loss:
                     Console.Write(" + Loss");
@@ -72,6 +113,7 @@ public class Day2
         }
         return score;
     }
+
     private static string RemoveWhitespace(string input)
     {
         return new string(input.ToCharArray()
@@ -79,7 +121,41 @@ public class Day2
             .ToArray());
     }
 
-    private static PlayItems GetPlayItem(char letter)
+    private static PlayItems GetPlayItemsFromState(PlayItems enemy, State state)
+    {
+        switch (state)
+        {
+            case State.Draw:
+                return enemy;
+            case State.Win:
+                switch (enemy)
+                { 
+                    case PlayItems.Paper:
+                        return PlayItems.Scissors;
+                    case PlayItems.Rock:
+                        return PlayItems.Paper;
+                    case PlayItems.Scissors:
+                        return PlayItems.Rock;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(enemy), enemy, null);
+                }
+            case State.Loss:
+                switch (enemy)
+                { 
+                    case PlayItems.Paper:
+                        return PlayItems.Rock;
+                    case PlayItems.Rock:
+                        return PlayItems.Scissors;
+                    case PlayItems.Scissors:
+                        return PlayItems.Paper;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(enemy), enemy, null);
+                }
+            default:
+                throw new ArgumentOutOfRangeException(nameof(state), state, null);
+        }
+    }
+    private static PlayItems GetPlayItemFromLetter(char letter)
     {
         switch (letter)
         {
@@ -96,12 +172,27 @@ public class Day2
 
         throw new ArgumentException();
     }
-    private static State GetState(string battle)
+
+    private static State GetStateFromLetter(char letter)
     {
-        switch (GetPlayItem(battle[1]))
+        switch (letter)
+        {
+            case 'X':
+                return State.Loss;
+            case 'Y':
+                return State.Draw;
+            case 'Z':
+                return State.Win;
+            default:
+                throw new ArgumentException();
+        }
+    }
+    private static State GetStateFromString(string battle)
+    {
+        switch (GetPlayItemFromLetter(battle[1]))
         {
             case PlayItems.Rock:
-                switch (GetPlayItem(battle[0]))
+                switch (GetPlayItemFromLetter(battle[0]))
                 {
                     case PlayItems.Rock:
                         return State.Draw;
@@ -112,7 +203,7 @@ public class Day2
                 }
                 break;
             case PlayItems.Paper:
-                switch (GetPlayItem(battle[0]))
+                switch (GetPlayItemFromLetter(battle[0]))
                 {
                     case PlayItems.Rock:
                         return State.Win;
@@ -124,7 +215,7 @@ public class Day2
 
                 break;
             case PlayItems.Scissors:
-                switch (GetPlayItem(battle[0]))
+                switch (GetPlayItemFromLetter(battle[0]))
                 {
                     case PlayItems.Rock:
                         return State.Loss;
